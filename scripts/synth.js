@@ -10,23 +10,24 @@ var context = new AudioContext(),
     oscillators = {};
 
 masterVolume.gain.value = 0.2;
-
+ 
 masterVolume.connect(context.destination);
 
-function generateTone (note, frequency) {
-    var osc = context.createOscillator(),
-        osc2 = context.createOscillator();
+function frequencyModulation (note, frequency, ratio, index) {
+    var osc = context.createOscillator(),   // A1 = a1*cos(w1*t), carrier oscillator
+        osc2 = context.createOscillator();  // A2 = a2*cos(w2*t), modulating oscillator
 
-    osc.frequency.value = frequency;
-    osc.type = 'sawtooth';
-    osc.detune.value = -10;
+    // FM is A1 = cos((w1 + a2*cos(w2t))t) 
+
+    osc.frequency.value = osc2.frequency.value * index;
+    osc.type = 'sine';
+    // osc.detune.value = -10;
 
     osc2.frequency.value = frequency;
-    osc2.type = 'triangle';
-    osc2.detune.value = 10;
+    osc2.type = 'sine';
+    // osc2.detune.value = 10;
 
     osc.connect(masterVolume);
-    osc2.connect(masterVolume);
 
     masterVolume.connect(context.destination);
 
